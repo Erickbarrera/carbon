@@ -1136,6 +1136,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Erickbarrera",
+      "name": "Erick Barrera",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5781399?v=4",
+      "profile": "https://github.com/Erickbarrera",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "commitConvention": "none"

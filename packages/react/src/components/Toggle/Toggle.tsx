@@ -5,11 +5,82 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { useRef } from 'react';
+import React, { ReactNode, useRef, MouseEvent } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useControllableState } from '../../internal/useControllableState';
 import { usePrefix } from '../../internal/usePrefix';
+
+export interface ToggleProps {
+  /**
+   * Specify a custom className to apply to the form-item node
+   */
+  className?: string,
+
+  /**
+   * Specify whether the toggle should be on by default
+   */
+  defaultToggled?: boolean,
+
+  /**
+   * Whether this control should be disabled
+   */
+  disabled?: boolean,
+
+  /**
+   * If true, the side labels (props.labelA and props.labelB) will be replaced by
+   * props.labelText (if passed), so that the toggle doesn't render a top label.
+   */
+  hideLabel?: boolean,
+
+  /**
+   * Provide an id that unique represents the underlying `<button>`
+   */
+  id: string,
+
+  /**
+   * Specify the label for the "off" position
+   */
+  labelA?: ReactNode,
+
+  /**
+   * Specify the label for the "on" position
+   */
+  labelB?: ReactNode,
+
+  /**
+   * Provide the text that will be read by a screen reader when visiting this
+   * control. This should be provided unless 'aria-labelledby' is set instead
+   * or you use an external <label> element with its "for" attribute set to the
+   * toggle's id.
+   */
+  labelText?: string,
+
+  /**
+   * Provide an event listener that is called when the control is clicked
+   */
+  onClick?: MouseEvent<HTMLButtonElement>,
+
+  /**
+   * Provide an event listener that is called when the control is toggled
+   */
+  onToggle?: MouseEvent<HTMLButtonElement>,
+
+  /**
+   * Whether the toggle should be read-only
+   */
+  readOnly?: boolean,
+
+  /**
+   * Specify the size of the Toggle. Currently only supports 'sm' or 'md' (default)
+   */
+  size?: 'sm' | 'md',
+
+  /**
+   * Specify whether the control is toggled
+   */
+  toggled?: boolean,
+};
 
 export function Toggle({
   'aria-labelledby': ariaLabelledby,
@@ -29,8 +100,9 @@ export function Toggle({
   ...other
 }) {
   const prefix = usePrefix();
-  const buttonElement = useRef(null);
+  const buttonElement = useRef<HTMLButtonElement>(null);
   const [checked, setChecked] = useControllableState({
+    name: 'custom',
     value: toggled,
     onChange: onToggle,
     defaultValue: defaultToggled,
@@ -78,17 +150,17 @@ export function Toggle({
       onClick={
         !labelText
           ? (e) => {
-              // the underlying <button> can only be activated by keyboard as it is visually hidden;
-              // therefore, if this event's target is the <button>, it had to be triggered by
-              // the keyboard event which already calls handleClick. if we wouldn't catch this, the
-              // onClick and onToggle functions would be called twice whenever the user activates the
-              // toggle by keyboard and props['aria-labelledby'] is passed.
-              if (buttonElement.current && e.target !== buttonElement.current) {
-                handleClick(e);
-                buttonElement.current.focus();
-              }
+            // the underlying <button> can only be activated by keyboard as it is visually hidden;
+            // therefore, if this event's target is the <button>, it had to be triggered by
+            // the keyboard event which already calls handleClick. if we wouldn't catch this, the
+            // onClick and onToggle functions would be called twice whenever the user activates the
+            // toggle by keyboard and props['aria-labelledby'] is passed.
+            if (buttonElement.current && e.target !== buttonElement.current) {
+              handleClick(e);
+              buttonElement.current.focus();
             }
-          : null
+          }
+          : undefined
       }>
       <button
         {...other}
